@@ -1,6 +1,6 @@
 # SEC 4th-Down Decision Bot
 
-## 1 Purpose
+## Purpose
 Real-time 4th-down advice for every SEC football program:
 
 * Predicts coach call (Go / Punt / Field Goal).  
@@ -10,7 +10,7 @@ Real-time 4th-down advice for every SEC football program:
 
 ---
 
-## 2 Repository Layout
+## Repository Layout
 
 ```
 /api/            Plumber sources + Dockerfile  
@@ -24,14 +24,14 @@ README.md
 
 ---
 
-## 3 Data Pipeline
+## Data Pipeline
 
 * **Seasons loaded** 2019 – 2024 via `cfbfastR::load_cfb_pbp()`.  
 * **Filter** `down == 4`; drop plays lacking distance, field-pos, score, or clock.  
 * **Derived flags** `goal_to_go`, `under_two`, `fg_distance`.  
 * **Outputs** global set `pbp_4th_all` and 16 team-specific frames.
 
-### 3.1 Coach-Specific Sampling Rules
+### Coach-Specific Sampling Rules
 Each SEC model uses plays from the head-coach / OC’s career stops so the algorithm learns that coach’s tendencies, even before arriving at the current school.
 
 | SEC Team | Off-Field Schools Used | Seasons Included |
@@ -55,28 +55,28 @@ Each SEC model uses plays from the head-coach / OC’s career stops so the algor
 
 ---
 
-## 4 Model Training
+## Model Training
 
-### 4.1 Coach-Decision Classifiers
+### Coach-Decision Classifiers
 * **Algorithm** `xgboost` (400 trees, depth 6, η 0.10).  
 * **Features** distance, yards-to-goal, clock, period, score, timeouts, `goal_to_go`, `under_two`, `fg_distance`.  
 * **Pipeline** dummy-code → impute → normalise → SMOTE → model.  
 * **Output** `models/<team>_model.rds`.
 
-### 4.2 Global Win-Probability Regressor
+### Global Win-Probability Regressor
 * **Algorithm** Random-forest (`ranger`, 500 trees).  
 * **Target** `wp_before`.  
 * **Output** `models/wp_model.rds` (butchered and hosted on GCS).  
 * **Performance** RMSE 0.0325, MAE 0.0149, R² 0.991.
 
-### 4.3 Play-Similarity Objects
+### Play-Similarity Objects
 10-column numeric matrix + raw tibble per team; saved in `/similarity/`.
 
 ---
 
-## 5 Model Evaluation
+## Model Evaluation
 
-### 5.1 Coach-Decision Metrics (test sets)
+### Coach-Decision Metrics (test sets)
 
 | Team | Acc. | κ |
 |------|-----:|--:|
@@ -97,7 +97,7 @@ Each SEC model uses plays from the head-coach / OC’s career stops so the algor
 | Texas A&M | 0.832 | 0.710 |
 | Vanderbilt | 0.833 | 0.707 |
 
-### 5.2 Win-Probability Metrics (global)
+### Win-Probability Metrics (global)
 
 | RMSE | MAE | R² |
 |-----:|----:|---:|
@@ -105,7 +105,7 @@ Each SEC model uses plays from the head-coach / OC’s career stops so the algor
 
 ---
 
-## 6 APIs
+## APIs
 
 * `/predict_decision` coach classifier output (string).  
 * `/wp` win-probability (numeric).  
@@ -113,7 +113,7 @@ Each SEC model uses plays from the head-coach / OC’s career stops so the algor
 
 ---
 
-## 7 Container & Cloud-Run Deployment
+## Container & Cloud-Run Deployment
 
 ```
 docker build -t sec-4thdown-api ./api
@@ -131,7 +131,7 @@ WP model downloads from GCS at runtime; all other artefacts copied into the imag
 
 ---
 
-## 8 Shiny Front-End
+## Shiny Front-End
 
 * Located in `/shiny`.  
 * Queries both endpoints and renders:  
@@ -143,7 +143,7 @@ WP model downloads from GCS at runtime; all other artefacts copied into the imag
 
 ---
 
-## 9 Retraining & Extension
+## Retraining & Extension
 
 * **Add seasons** Run `scripts/sec_model_builder.R`; new `.rds` overwrite old.  
 * **Add teams** Extend play-caller plan; rerun builder.  
@@ -151,7 +151,7 @@ WP model downloads from GCS at runtime; all other artefacts copied into the imag
 
 ---
 
-## 10 Local Development
+## Local Development
 
 ```
 # Build or rebuild everything
@@ -166,7 +166,7 @@ R -e "shiny::runApp('shiny', host = '0.0.0.0', port = 3838)"
 
 ---
 
-## 11 Key Points
+## Key Points
 
 * Coach classifiers: 0.81–0.91 accuracy across teams.  
 * Global WP: RMSE ≈ 0.03, R² ≈ 0.99.  
