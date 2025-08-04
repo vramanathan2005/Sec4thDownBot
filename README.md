@@ -1,6 +1,6 @@
 # SEC 4th-Down Decision Bot
 
-## 1 Purpose
+## Purpose
 This repository delivers real-time 4th-down advice for every SEC football program.
 
 * Predicts coach choice (Go / Punt / Field Goal).  
@@ -10,7 +10,7 @@ This repository delivers real-time 4th-down advice for every SEC football progra
 
 ---
 
-## 2 Repository Layout
+## Repository Layout
 
 ```
 /api/            Plumber sources + Dockerfile  
@@ -24,7 +24,7 @@ README.md
 
 ---
 
-## 3 Data Pipeline
+## Data Pipeline
 
 | Stage   | Detail                                                                                                 |
 |---------|--------------------------------------------------------------------------------------------------------|
@@ -40,7 +40,7 @@ Derived flags:
 
 ---
 
-## 4 Model Training
+## Model Training
 
 ### 4.1 Coach-Decision Classifiers
 * Algorithm `xgboost` (400 trees, depth 6, η = 0.10).  
@@ -61,7 +61,7 @@ Each `/similarity/<team>_sim.rds` stores:
 
 ---
 
-## 5 Model Evaluation
+## Model Evaluation
 
 ### 5.1 Coach-Decision Metrics  
 
@@ -110,7 +110,7 @@ Models are memoised so each container loads them only once.
 
 ---
 
-## 7 Container & Cloud Run Deployment
+## Container & Cloud Run Deployment
 
 1. **Build image**
 
@@ -139,7 +139,7 @@ WP model is fetched from GCS at runtime to keep the container slim.
 
 ---
 
-## 8 Shiny Front-End
+## Shiny Front-End
 
 * Located in `/shiny`.  
 * Accepts user-defined situation, calls both APIs, and draws:  
@@ -151,7 +151,7 @@ WP model is fetched from GCS at runtime to keep the container slim.
 
 ---
 
-## 9 Retraining & Extension
+## Retraining & Extension
 
 * **Add seasons** Run `scripts/sec_model_builder.R`; new `.rds` overwrite old.  
 * **Add teams** Extend play-caller plan and rerun training script.  
@@ -159,7 +159,7 @@ WP model is fetched from GCS at runtime to keep the container slim.
 
 ---
 
-## 10 Local Development
+## Local Development
 
 * Build everything:
 
@@ -181,7 +181,7 @@ WP model is fetched from GCS at runtime to keep the container slim.
 
 ---
 
-## 11 Key Points
+## Key Points
 
 * Coach classifiers hit 81–91 % accuracy by team.  
 * Global WP model shows RMSE ≈ 0.03 and R² ≈ 0.99.  
