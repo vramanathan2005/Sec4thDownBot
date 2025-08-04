@@ -1,4 +1,4 @@
 library(plumber)
 
-pr <- plumber::plumb("plumber.R")   #  <-- was "api.R"
-pr$run(host = "0.0.0.0", port = 8080)
+pr <- plumb("api.R")
+pr$run(host = "0.0.0.0", port = as.numeric(Sys.getenv("PORT", 8080)))
